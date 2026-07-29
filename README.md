@@ -106,13 +106,22 @@ the bottom — meaning it's waiting for the Mac to connect.
 
 Recent Xcode versions don't ship **iOS DeviceSupport** for old iOS 12
 builds anymore. You need to add the matching support folder to
-`~/Library/Developer/Xcode/iOS DeviceSupport/`, pulled from a community
-repo such as
-[filsv/iOSDeviceSupport](https://github.com/filsv/iOSDeviceSupport) or
-[apptim/iPhoneOSDeviceSupport](https://github.com/apptim/iPhoneOSDeviceSupport)
-(doesn't need to match the exact build number — a close minor version is
-fine). Copy the folder into place, fully quit Xcode, reconnect the iPad,
-and reopen.
+`~/Library/Developer/Xcode/iOS DeviceSupport/`. This repo was actually
+brought up using the 12.5 support bundle from
+[apptim/iPhoneOSDeviceSupport](https://github.com/apptim/iPhoneOSDeviceSupport):
+
+```bash
+curl -L -o /tmp/12.5.zip https://raw.githubusercontent.com/apptim/iPhoneOSDeviceSupport/master/12.5.zip
+unzip -o /tmp/12.5.zip -d /tmp/ds125
+cp -R "/tmp/ds125/12.5" ~/Library/Developer/Xcode/iOS\ DeviceSupport/
+```
+
+It doesn't need to match the exact build number (e.g. 12.5.8/16H88 worked
+fine with a plain "12.5" folder) — a close minor version is enough. Other
+community repos like
+[filsv/iOSDeviceSupport](https://github.com/filsv/iOSDeviceSupport) work
+the same way if you need a different version. Copy the folder into place,
+fully quit Xcode, reconnect the iPad, and reopen.
 
 ### Installing/running via CLI without opening Xcode (old hardware)
 
