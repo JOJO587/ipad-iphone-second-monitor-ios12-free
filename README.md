@@ -1,4 +1,4 @@
-# Turn an iPad stuck on iOS 12 into a second display for your Mac (macOS 26), over Lightning or Wi-Fi — free, self-hosted
+# Turn an iPad or iPhone stuck on iOS 12 into a second display for your Mac (macOS 26), over Lightning or Wi-Fi — free, self-hosted
 
 **Built and running for real** on an iPad Air (Model A1475, iOS 12.5.8), both over a Lightning cable and over Wi-Fi. H.264 video + touch + two-finger scroll + a real mouse cursor all work reliably.
 
@@ -89,8 +89,8 @@ useful second display in practice than an iPad.
 ## Step 0 — Clone with submodules
 
 ```bash
-git clone --recurse-submodules https://github.com/cuongpham1/ipad-second-monitor-ios12-free.git
-cd ipad-second-monitor-ios12-free
+git clone --recurse-submodules https://github.com/cuongpham1/ipad-iphone-second-monitor-ios12-free.git
+cd ipad-iphone-second-monitor-ios12-free
 ```
 
 If you already cloned without `--recurse-submodules`:
