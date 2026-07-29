@@ -64,6 +64,16 @@ final class ReceiverViewController: UIViewController, VideoReceiverDelegate {
         scrollPan.minimumNumberOfTouches = 2
         scrollPan.maximumNumberOfTouches = 2
         view.addGestureRecognizer(scrollPan)
+
+        NotificationCenter.default.addObserver(self, selector: #selector(appWillEnterForeground),
+                                                name: UIApplication.willEnterForegroundNotification, object: nil)
+    }
+
+    // Backgrounding suspends our networking queue; the listener/connection
+    // can die silently without ever telling us, leaving the screen stuck on
+    // the last decoded frame. Force a clean reconnect on every return.
+    @objc private func appWillEnterForeground() {
+        receiver.ensureListening()
     }
 
     override func viewDidLayoutSubviews() {

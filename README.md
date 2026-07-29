@@ -180,10 +180,9 @@ membership ($99/year) — signs for a full year.
 - Check the Mac app's console log (Xcode → View → Debug Area → Console
   while running the OpenSidecarMac scheme) to see whether it's seeing the
   device over usbmuxd at all.
-- Make sure the iPad app stays in the foreground (iOS can suspend
-  `NWListener` when the app goes to background — this minimal client
-  doesn't yet restart the listener on foreground return like the original
-  does).
+- If the picture stays black/frozen after switching back from another app,
+  give it a second or two — `ensureListening()` reconnects automatically on
+  foreground return, which briefly flashes black while the Mac redials.
 - If the Mac app sends an `updateRequired`/incompatible-version message —
   a newer OpenDisplay Mac build may have changed the protocol.
   `VideoReceiver.swift` intentionally omits the `pv` (protocol version)
@@ -193,11 +192,14 @@ membership ($99/year) — signs for a full year.
 ## What works / what's missing
 
 Works: video, touch to click/drag, two-finger scroll, **a real mouse
-cursor** (position + shape, synced over its own control message, smooth).
+cursor** (position + shape, synced over its own control message, smooth),
+**reconnect on foreground return** (the listener/connection can die
+silently while backgrounded since no background networking mode is
+declared — `ensureListening()` forces a clean reconnect every time the app
+comes back, at the cost of a brief flicker).
 
 Missing: an external keyboard, automatic rotation to match the virtual
-display, latency measurement, auto-restart when the app returns from the
-background.
+display, latency measurement.
 
 ## License
 

@@ -93,6 +93,25 @@ final class VideoReceiver {
         }
     }
 
+    /// Call when the app returns to the foreground. iOS suspends our queue
+    /// while backgrounded (no background networking mode declared), so the
+    /// listener/connection can die silently without ever reaching the
+    /// `.failed` state that would otherwise trigger startListener()'s own
+    /// retry -- leaving the screen stuck on the last decoded frame forever.
+    /// Unconditionally tearing down and recreating both here costs a brief
+    /// reconnect flicker but guarantees we never stay stuck black.
+    func ensureListening() {
+        queue.async { [weak self] in
+            guard let self = self else { return }
+            self.connection?.cancel()
+            self.connection = nil
+            self.listener?.cancel()
+            self.listener = nil
+            self.resetStreamState()
+            self.startListener()
+        }
+    }
+
     private func startListener() {
         do {
             let tcp = NWProtocolTCP.Options()
