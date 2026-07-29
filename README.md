@@ -1,121 +1,126 @@
-# Dùng iPad (kẹt ở iOS 12) làm màn hình phụ cho Mac (macOS 26), qua cáp Lightning — miễn phí, tự host
+# Turn an iPad stuck on iOS 12 into a wired second display for your Mac (macOS 26) over Lightning — free, self-hosted
 
-**Đã build + chạy thật** trên iPad Air (Model A1475, iOS 12.5.8) qua cáp Lightning. Video H.264 + chạm + cuộn 2 ngón + con trỏ chuột đều hoạt động ổn định.
+**Built and running for real** on an iPad Air (Model A1475, iOS 12.5.8) over a Lightning cable. H.264 video + touch + two-finger scroll + a real mouse cursor all work reliably.
 
-## Ý tưởng
+## The idea
 
-Không dùng app trả phí (Duet Display, Luna Display...). Thay vào đó:
+Skip the paid apps (Duet Display, Luna Display...). Instead:
 
-1. **Máy Mac**: build và chạy nguyên bản (không sửa gì) app mã nguồn mở
-   **[OpenDisplay](https://github.com/peetzweg/opendisplay)** (GPL-3.0, miễn phí).
-   App này đã làm đúng phần khó nhất: tạo virtual display ảo trên macOS
-   (`CGVirtualDisplay`), chụp màn hình đó (`ScreenCaptureKit`), nén H.264
-   phần cứng (`VideoToolbox`), và tự nói chuyện trực tiếp với `usbmuxd` của
-   macOS để truyền qua cáp Lightning/USB-C — **không cần cài thêm công cụ
-   nào như `iproxy`.**
-2. **iPad**: OpenDisplay yêu cầu iPadOS 17+ nên **không cài được lên iPad
-   iOS 12** của bạn. Vì vậy thư mục `iOS/` trong repo này là một **client
-   iOS 12 viết riêng**, tự implement lại đúng giao thức mạng mà OpenDisplay
-   dùng (đọc được từ mã nguồn công khai của họ), để nói chuyện với app Mac
-   ở trên mà không cần sửa app Mac.
+1. **Mac side**: build and run, unmodified, the open-source
+   **[OpenDisplay](https://github.com/peetzweg/opendisplay)** app (GPL-3.0, free).
+   It already handles the hard part: creating a virtual display on macOS
+   (`CGVirtualDisplay`), capturing it (`ScreenCaptureKit`), hardware-encoding
+   H.264 (`VideoToolbox`), and talking directly to macOS's `usbmuxd` to
+   transport it over Lightning/USB-C — **no extra tool like `iproxy`
+   needed.**
+2. **iPad side**: OpenDisplay requires iPadOS 17+, so it **can't be
+   installed on an iOS 12 iPad**. That's why the `iOS/` folder in this repo
+   is a **purpose-built iOS 12 client**: a clean-room reimplementation of
+   OpenDisplay's network protocol (read from their public source), so it
+   can talk to the unmodified Mac app above without touching it.
 
-Vì Mac chỉ cần chạy app không sửa đổi, còn phần bạn thực sự "tự viết" chỉ là
-app iPad (nhẹ hơn nhiều so với viết lại toàn bộ pipeline từ đầu).
+Since the Mac side only needs an unmodified build, the only thing you're
+actually "writing" yourself is the iPad app — much lighter than
+reimplementing the whole pipeline from scratch.
 
-## Cấu trúc repo
+## Repo layout
 
 ```
 ipad12-second-screen/
   README.md
-  LICENSE                 <- MIT, áp dụng cho iOS/ (code tự viết)
-  iOS/                    <- client iOS 12, tự viết, MIT
-    project.yml           <- cấu hình xcodegen
+  LICENSE                 <- MIT, covers iOS/ (code written for this project)
+  iOS/                    <- iOS 12 client, original code, MIT
+    project.yml           <- xcodegen config
     App/
       AppDelegate.swift
-      ReceiverViewController.swift  <- toàn màn hình hiển thị video + bắt chạm/cuộn + vẽ cursor sprite
-      VideoReceiver.swift    <- lõi: nghe TCP, giải khung, decode H.264, gửi/nhận control message
+      ReceiverViewController.swift  <- fullscreen video view + touch/scroll capture + cursor sprite
+      VideoReceiver.swift    <- core: TCP listener, frame deframing, H.264 decode, control message send/recv
       LaunchScreen.storyboard
       Assets.xcassets/
-  Mac/                    <- git submodule, upstream OpenDisplay KHÔNG sửa, GPL-3.0
+  Mac/                    <- git submodule, upstream OpenDisplay, UNMODIFIED, GPL-3.0
 ```
 
-`Mac/` là **git submodule** trỏ thẳng vào repo gốc `peetzweg/opendisplay` —
-không copy/sửa gì, để rõ ràng đây là code của tác giả khác (giữ nguyên
-license GPL-3.0 của họ) và dễ `git submodule update --remote` khi họ ra bản
-mới.
+`Mac/` is a **git submodule** pointing straight at the upstream
+`peetzweg/opendisplay` repo — nothing copied or edited, so it's clear this
+is someone else's code (their GPL-3.0 license stays intact), and it's easy
+to `git submodule update --remote` when they cut a new release.
 
-Yêu cầu tối thiểu: **iOS 12.0** (`iOS/project.yml` → `deploymentTarget`), đã
-test thật trên iOS 12.5.8.
+Minimum requirement: **iOS 12.0** (`iOS/project.yml` → `deploymentTarget`),
+tested for real on iOS 12.5.8.
 
-## Bước 0 — Clone kèm submodule
+## Step 0 — Clone with submodules
 
 ```bash
 git clone --recurse-submodules https://github.com/cuongpham1/ipad-second-monitor-ios12-free.git
 cd ipad-second-monitor-ios12-free
 ```
 
-Nếu đã clone thường (thiếu `--recurse-submodules`):
+If you already cloned without `--recurse-submodules`:
 
 ```bash
 git submodule update --init --recursive
 ```
 
-## Bước 1 — Build app Mac (OpenDisplay, không sửa)
+## Step 1 — Build the Mac app (OpenDisplay, unmodified)
 
 ```bash
 brew install xcodegen
 cd Mac
-echo "DEVELOPMENT_TEAM=YOUR_TEAM_ID" > .env   # xem Team ID ở developer.apple.com/account, mục Membership
+echo "DEVELOPMENT_TEAM=YOUR_TEAM_ID" > .env   # find your Team ID at developer.apple.com/account, Membership section
 ./generate.sh
 open OpenSidecar.xcodeproj
 ```
 
-Trong Xcode: chọn scheme **OpenSidecarMac** → Run. Lần đầu chạy, macOS sẽ
-xin quyền **Screen Recording** và **Accessibility** (System Settings →
-Privacy & Security) — cấp cả hai, **quit hẳn app (Cmd+Q) rồi mở lại**
-(bật toggle quyền không đủ, cần khởi động lại app mới nhận quyền mới), rồi
-chạy lại.
+In Xcode: select the **OpenSidecarMac** scheme → Run. On first launch,
+macOS will ask for **Screen Recording** and **Accessibility** permissions
+(System Settings → Privacy & Security) — grant both, **fully quit the app
+(Cmd+Q) and relaunch it** (flipping the toggle isn't enough; the app needs
+a restart to actually pick up the new permissions), then run it again.
 
-(Có thể dùng luôn bản `.dmg` build sẵn ở
-[Releases](https://github.com/peetzweg/opendisplay/releases/latest) thay vì
-tự build, nếu bạn tin tưởng binary đã ký/notarize sẵn của tác giả.)
+(You can also grab the prebuilt `.dmg` from
+[Releases](https://github.com/peetzweg/opendisplay/releases/latest)
+instead of building it yourself, if you trust the author's signed/notarized
+binary.)
 
-## Bước 2 — Build app iPad (thư mục `iOS/` trong repo này)
+## Step 2 — Build the iPad app (`iOS/` in this repo)
 
 ```bash
-brew install xcodegen   # nếu chưa cài ở bước 1
+brew install xcodegen   # skip if already installed in step 1
 cd iOS
 xcodegen generate
 open LegacyPadDisplay.xcodeproj
 ```
 
-Trong Xcode:
-1. Chọn target **LegacyPadDisplay** → tab **Signing & Capabilities** → chọn
-   Team là Apple ID cá nhân của bạn.
-2. Cắm iPad vào Mac bằng cáp Lightning, chọn iPad làm device đích ở thanh
-   công cụ Xcode.
-3. Nhấn Run. Lần đầu cài, vào **Cài đặt → General → VPN & Device
-   Management** trên iPad để "Trust" developer certificate của bạn.
+In Xcode:
+1. Select target **LegacyPadDisplay** → **Signing & Capabilities** tab →
+   set Team to your personal Apple ID.
+2. Plug the iPad into the Mac with a Lightning cable, select it as the
+   destination device in Xcode's toolbar.
+3. Hit Run. On first install, go to **Settings → General → VPN & Device
+   Management** on the iPad to "Trust" your developer certificate.
 
-App sẽ hiện toàn màn hình đen với dòng chữ "Listening on :9000" ở dưới —
-nghĩa là đang chờ Mac kết nối tới.
+The app should show a fullscreen black screen with "Listening on :9000" at
+the bottom — meaning it's waiting for the Mac to connect.
 
-### Xcode báo "Failed to prepare the device for development"
+### Xcode says "Failed to prepare the device for development"
 
-Xcode mới không kèm sẵn **iOS DeviceSupport** cho bản iOS 12 cũ. Cần thêm
-folder support đúng version vào
-`~/Library/Developer/Xcode/iOS DeviceSupport/`, lấy từ repo cộng đồng như
-[filsv/iOSDeviceSupport](https://github.com/filsv/iOSDeviceSupport) hoặc
+Recent Xcode versions don't ship **iOS DeviceSupport** for old iOS 12
+builds anymore. You need to add the matching support folder to
+`~/Library/Developer/Xcode/iOS DeviceSupport/`, pulled from a community
+repo such as
+[filsv/iOSDeviceSupport](https://github.com/filsv/iOSDeviceSupport) or
 [apptim/iPhoneOSDeviceSupport](https://github.com/apptim/iPhoneOSDeviceSupport)
-(không cần đúng tuyệt đối build number, gần đúng minor version là được).
-Copy folder vào đúng chỗ, quit hẳn Xcode, cắm lại iPad, mở lại.
+(doesn't need to match the exact build number — a close minor version is
+fine). Copy the folder into place, fully quit Xcode, reconnect the iPad,
+and reopen.
 
-### Cài/chạy qua CLI không cần mở Xcode (máy đời cũ)
+### Installing/running via CLI without opening Xcode (old hardware)
 
-`xcodebuild`/`devicectl` (công cụ mới, dùng CoreDevice) **không hỗ trợ cài
-lên iOS 12** — báo lỗi kiểu "This device does not support acquiring a usage
-assertion". Dùng [`ios-deploy`](https://github.com/ios-control/ios-deploy)
-(API AMDevice cũ) thay thế:
+`xcodebuild`/`devicectl` (the newer, CoreDevice-based tooling) **doesn't
+support installing to iOS 12** — it fails with something like "This device
+does not support acquiring a usage assertion". Use
+[`ios-deploy`](https://github.com/ios-control/ios-deploy) instead (it uses
+the older AMDevice API):
 
 ```bash
 brew install ios-deploy
@@ -124,49 +129,56 @@ xcodebuild build -project iOS/LegacyPadDisplay.xcodeproj -scheme LegacyPadDispla
 ios-deploy --bundle iOS/build/.../LegacyPadDisplay.app --justlaunch
 ```
 
-### Apple ID miễn phí — app tự hết hạn sau 7 ngày
+### Free Apple ID — the app expires after 7 days
 
-Giới hạn của Apple, không phải của project này. Sau 7 ngày, cắm cáp mở Xcode
-(hoặc chạy lại `ios-deploy`) cài lại là dùng tiếp được. Muốn khỏi lặp lại,
-cần Apple Developer Program trả phí ($99/năm) — ký được 1 năm.
+This is an Apple limitation, not something this project can fix. After 7
+days, plug the cable back in, open Xcode (or re-run `ios-deploy`), and
+reinstall to keep using it. To avoid repeating this, you'd need a paid
+Apple Developer Program membership ($99/year) — signs for a full year.
 
-## Bước 3 — Kết nối
+## Step 3 — Connect
 
-1. Đảm bảo cả hai app đang chạy (Mac app đã cấp quyền Screen Recording +
-   Accessibility; iPad app đang mở, cắm cáp Lightning).
-2. Trong app Mac (OpenDisplay), chọn chế độ kết nối **USB** — vì app iPad
-   của bạn có `id` và cổng 9000 giống hệt bản gốc, Mac app sẽ tự nhận diện
-   qua `usbmuxd` như với một thiết bị OpenDisplay bình thường.
-3. Nếu kết nối thành công, iPad sẽ đổi từ màn hình đen sang hiển thị hình
-   ảnh macOS (kèm con trỏ chuột thật), và trong System Settings → Displays
-   trên Mac sẽ xuất hiện một màn hình mới — kéo cửa sổ sang đó là dùng được.
+1. Make sure both apps are running (Mac app has Screen Recording +
+   Accessibility permissions; iPad app is open, cable plugged in).
+2. In the Mac app (OpenDisplay), select the **USB** connection mode — since
+   your iPad app shares the same `id` and port 9000 as the original client,
+   the Mac app will recognize it through `usbmuxd` just like a normal
+   OpenDisplay device.
+3. Once connected, the iPad should switch from a black screen to showing
+   the macOS desktop (with a real mouse cursor), and a new display should
+   appear under System Settings → Displays on the Mac — drag a window over
+   to it and you're set.
 
-## Nếu không kết nối được — chỗ cần kiểm tra trước
+## If it won't connect — check these first
 
-- **Không thấy display ảo mới trong System Settings → Displays**: gần như
-  luôn là do thiếu quyền Screen Recording/Accessibility cho app Mac, hoặc
-  cấp quyền xong nhưng chưa quit+mở lại app (xem Bước 1).
-- Log console của app Mac (Xcode → View → Debug Area → Console khi chạy
-  scheme OpenSidecarMac) sẽ cho biết nó có thấy device qua usbmuxd không.
-- Đảm bảo app iPad đang ở foreground (iOS có thể tạm dừng NWListener khi
-  app vào background — bản tối giản này chưa xử lý việc tự khởi động lại
-  listener khi quay lại foreground như bản gốc).
-- Nếu Mac app gửi một `updateRequired`/phiên bản không tương thích — bản
-  OpenDisplay Mac mới có thể đổi giao thức. `VideoReceiver.swift` cố tình
-  không gửi trường `pv` (protocol version) nên sẽ luôn được xem là
-  "protocol 1", mà theo tài liệu của OpenDisplay thì mọi bản Mac hiện tại
-  đều hỗ trợ ngược protocol 1.
+- **No new virtual display shows up under System Settings → Displays**:
+  almost always missing Screen Recording/Accessibility permission for the
+  Mac app, or granted but the app wasn't fully quit and relaunched
+  afterward (see Step 1).
+- Check the Mac app's console log (Xcode → View → Debug Area → Console
+  while running the OpenSidecarMac scheme) to see whether it's seeing the
+  device over usbmuxd at all.
+- Make sure the iPad app stays in the foreground (iOS can suspend
+  `NWListener` when the app goes to background — this minimal client
+  doesn't yet restart the listener on foreground return like the original
+  does).
+- If the Mac app sends an `updateRequired`/incompatible-version message —
+  a newer OpenDisplay Mac build may have changed the protocol.
+  `VideoReceiver.swift` intentionally omits the `pv` (protocol version)
+  field, so it's always treated as "protocol 1", which every current
+  OpenDisplay Mac release documents as backward-compatible.
 
-## Tính năng đã có / chưa có
+## What works / what's missing
 
-Có: video, chạm để click/kéo, vuốt 2 ngón để cuộn, **con trỏ chuột thật**
-(vị trí + hình dạng, đồng bộ qua control message riêng, mượt).
+Works: video, touch to click/drag, two-finger scroll, **a real mouse
+cursor** (position + shape, synced over its own control message, smooth).
 
-Chưa có: bàn phím rời, xoay màn hình tự động khớp lại virtual display, đo
-độ trễ, tự khởi động lại khi app vào background.
+Missing: an external keyboard, automatic rotation to match the virtual
+display, latency measurement, auto-restart when the app returns from the
+background.
 
-## Giấy phép
+## License
 
-- `iOS/` (client iOS 12): MIT, xem [LICENSE](LICENSE).
-- `Mac/`: submodule trỏ tới `peetzweg/opendisplay`, GPL-3.0, tác giả gốc giữ
-  bản quyền — không sửa đổi, không vendor vào repo này.
+- `iOS/` (iOS 12 client): MIT, see [LICENSE](LICENSE).
+- `Mac/`: submodule pointing at `peetzweg/opendisplay`, GPL-3.0, copyright
+  held by its original authors — unmodified, not vendored into this repo.
