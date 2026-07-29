@@ -118,7 +118,12 @@ a restart to actually pick up the new permissions), then run it again.
 (You can also grab the prebuilt `.dmg` from
 [Releases](https://github.com/peetzweg/opendisplay/releases/latest)
 instead of building it yourself, if you trust the author's signed/notarized
-binary.)
+binary. If you go this route, **drag `OpenDisplay.app` into
+`/Applications` first** — don't run it straight out of the mounted `.dmg`.
+Running it from the disk image works for a first test, but the volume
+unmounts on reboot and takes the app with it, and macOS ties the Screen
+Recording/Accessibility grants to that specific app path — moving the app
+afterward means re-granting both permissions again.)
 
 ## Step 2 — Build the iPad app (`iOS/` in this repo)
 
