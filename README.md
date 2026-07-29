@@ -123,27 +123,12 @@ community repos like
 the same way if you need a different version. Copy the folder into place,
 fully quit Xcode, reconnect the iPad, and reopen.
 
-### Installing/running via CLI without opening Xcode (old hardware)
-
-`xcodebuild`/`devicectl` (the newer, CoreDevice-based tooling) **doesn't
-support installing to iOS 12** — it fails with something like "This device
-does not support acquiring a usage assertion". Use
-[`ios-deploy`](https://github.com/ios-control/ios-deploy) instead (it uses
-the older AMDevice API):
-
-```bash
-brew install ios-deploy
-xcodebuild build -project iOS/LegacyPadDisplay.xcodeproj -scheme LegacyPadDisplay \
-  -destination 'generic/platform=iOS' -allowProvisioningUpdates
-ios-deploy --bundle iOS/build/.../LegacyPadDisplay.app --justlaunch
-```
-
 ### Free Apple ID — the app expires after 7 days
 
 This is an Apple limitation, not something this project can fix. After 7
-days, plug the cable back in, open Xcode (or re-run `ios-deploy`), and
-reinstall to keep using it. To avoid repeating this, you'd need a paid
-Apple Developer Program membership ($99/year) — signs for a full year.
+days, plug the cable back in, open Xcode, and hit Run again to reinstall.
+To avoid repeating this, you'd need a paid Apple Developer Program
+membership ($99/year) — signs for a full year.
 
 ## Step 3 — Connect
 
