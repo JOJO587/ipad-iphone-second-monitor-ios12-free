@@ -112,10 +112,9 @@ Two options:
   and macOS ties the Screen Recording/Accessibility grants to that specific
   app path — moving the app afterward means re-granting both permissions
   again.
-- **Build from source**: open `Mac/` in Xcode and follow
+- **Build from source**: open `Mac/` in Xcode and run it — see
   [OpenDisplay's own build instructions](https://github.com/peetzweg/opendisplay#readme)
-  (their `generate.sh`/`project.yml` setup, kept up to date on their side —
-  not duplicated here so this doesn't go stale when they change it).
+  for details.
 
 Either way, on first launch macOS will ask for **Screen Recording** and
 **Accessibility** permissions (System Settings → Privacy & Security) —
