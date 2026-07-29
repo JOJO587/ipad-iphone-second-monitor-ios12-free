@@ -69,6 +69,23 @@ to `git submodule update --remote` when they cut a new release.
 Minimum requirement: **iOS 12.0** (`iOS/project.yml` → `deploymentTarget`),
 tested for real on iOS 12.5.8.
 
+### Does this work on iPhone too?
+
+Yes, no code changes needed. `TARGETED_DEVICE_FAMILY` is already set to
+`"1,2"` (iPhone + iPad), and `VideoReceiver.swift` already reports
+`"device": "iPhone"` vs `"iPad"` based on `UIDevice.current.userInterfaceIdiom`
+in its `hello` message — this mirrors upstream OpenDisplay itself, which
+also targets both (`Mac/project.yml`'s local-network usage description
+literally says "connects to your iPad or iPhone"). The Mac side sizes the
+virtual display from whatever pixel dimensions the device reports in
+`hello`, so it isn't hardcoded to iPad proportions either.
+
+Build/install is the same flow as the iPad steps below — just pick the
+iPhone as the destination device in Xcode. If it's also stuck on an old
+iOS version, the same DeviceSupport caveat further down applies. The one
+real downside: an iPhone screen is a lot smaller, so it's a much less
+useful second display in practice than an iPad.
+
 ## Step 0 — Clone with submodules
 
 ```bash
