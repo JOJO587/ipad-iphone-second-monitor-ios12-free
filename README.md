@@ -7,6 +7,22 @@ same Wi-Fi network and connects directly. It prefers USB when a cable is
 plugged in (lower, steadier latency) and falls back to Wi-Fi automatically
 otherwise — you don't have to choose a mode, it just works either way.
 
+## Keywords / What this is
+
+Use an **old iPad on iOS 12 / 12.5.x** as a **free second display for Mac**
+(Apple Silicon or Intel, modern macOS). Open-source alternative to
+**Sidecar**, **Duet Display**, and **Luna Display** for devices too old to
+run OpenDisplay's own client (which needs iPadOS 17+). Works over
+**USB/Lightning** and **Wi-Fi**.
+
+| | This project | Sidecar | Duet Display | Luna Display | OpenDisplay (official client) |
+|---|---|---|---|---|---|
+| Cost | Free | Free | Free tier + paid | Paid (hardware dongle) | Free |
+| Min iOS/iPadOS | **12.0** | 13+ (needs macOS Catalina+ on the Mac side) | 12+ | 12+ | 17+ |
+| Open source | iOS client: yes (MIT). Mac app: yes (GPL-3.0, upstream) | No | No | No | Yes (GPL-3.0) |
+| Connection | USB/Lightning or Wi-Fi | USB or Wi-Fi | USB or Wi-Fi | USB or Wi-Fi (dongle) | USB or Wi-Fi |
+| Needs a companion Mac app you build yourself | Yes | No | No | No | Yes |
+
 ## The idea
 
 Skip the paid apps (Duet Display, Luna Display...). Instead:
@@ -188,3 +204,10 @@ background.
 - `iOS/` (iOS 12 client): MIT, see [LICENSE](LICENSE).
 - `Mac/`: submodule pointing at `peetzweg/opendisplay`, GPL-3.0, copyright
   held by its original authors — unmodified, not vendored into this repo.
+
+---
+
+*Keywords: iPad iOS 12 second monitor Mac, old iPad external display,
+Sidecar alternative iOS 12, Duet Display free alternative, Luna Display
+free alternative, OpenDisplay iOS 12 client, Lightning USB second screen,
+legacy iPad second monitor, LegacyPadDisplay.*

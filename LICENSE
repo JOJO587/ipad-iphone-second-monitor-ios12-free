@@ -19,10 +19,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
----
-
-This license covers the code in iOS/ (the iOS 12 client) only.
-Mac/ is a git submodule pointing at the unmodified upstream OpenDisplay
-project (https://github.com/peetzweg/opendisplay), licensed GPL-3.0 by its
-own authors — see Mac/LICENSE after running `git submodule update --init`.
