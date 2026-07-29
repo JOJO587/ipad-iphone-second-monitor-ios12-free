@@ -99,36 +99,34 @@ If you already cloned without `--recurse-submodules`:
 git submodule update --init --recursive
 ```
 
-## Step 1 — Build the Mac app (OpenDisplay, unmodified)
+## Step 1 — Get the Mac app (OpenDisplay, unmodified)
 
-```bash
-brew install xcodegen
-cd Mac
-echo "DEVELOPMENT_TEAM=YOUR_TEAM_ID" > .env   # find your Team ID at developer.apple.com/account, Membership section
-./generate.sh
-open OpenSidecar.xcodeproj
-```
+Two options:
 
-In Xcode: select the **OpenSidecarMac** scheme → Run. On first launch,
-macOS will ask for **Screen Recording** and **Accessibility** permissions
-(System Settings → Privacy & Security) — grant both, **fully quit the app
-(Cmd+Q) and relaunch it** (flipping the toggle isn't enough; the app needs
-a restart to actually pick up the new permissions), then run it again.
+- **Prebuilt (recommended, no Xcode needed)**: grab `OpenDisplay.dmg` from
+  the [latest release](https://github.com/peetzweg/opendisplay/releases/latest)
+  — signed and notarized by the author. Open it and **drag
+  `OpenDisplay.app` into `/Applications` first** — don't run it straight
+  out of the mounted `.dmg`. Running it from the disk image works for a
+  first test, but the volume unmounts on reboot and takes the app with it,
+  and macOS ties the Screen Recording/Accessibility grants to that specific
+  app path — moving the app afterward means re-granting both permissions
+  again.
+- **Build from source**: open `Mac/` in Xcode and follow
+  [OpenDisplay's own build instructions](https://github.com/peetzweg/opendisplay#readme)
+  (their `generate.sh`/`project.yml` setup, kept up to date on their side —
+  not duplicated here so this doesn't go stale when they change it).
 
-(You can also grab the prebuilt `.dmg` from
-[Releases](https://github.com/peetzweg/opendisplay/releases/latest)
-instead of building it yourself, if you trust the author's signed/notarized
-binary. If you go this route, **drag `OpenDisplay.app` into
-`/Applications` first** — don't run it straight out of the mounted `.dmg`.
-Running it from the disk image works for a first test, but the volume
-unmounts on reboot and takes the app with it, and macOS ties the Screen
-Recording/Accessibility grants to that specific app path — moving the app
-afterward means re-granting both permissions again.)
+Either way, on first launch macOS will ask for **Screen Recording** and
+**Accessibility** permissions (System Settings → Privacy & Security) —
+grant both, **fully quit the app (Cmd+Q) and relaunch it** (flipping the
+toggle isn't enough; the app needs a restart to actually pick up the new
+permissions), then run it again.
 
 ## Step 2 — Build the iPad app (`iOS/` in this repo)
 
 ```bash
-brew install xcodegen   # skip if already installed in step 1
+brew install xcodegen
 cd iOS
 xcodegen generate
 open LegacyPadDisplay.xcodeproj
