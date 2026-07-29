@@ -51,7 +51,9 @@ ipad12-second-screen/
   README.md
   LICENSE                 <- MIT, covers iOS/ (code written for this project)
   iOS/                    <- iOS 12 client, original code, MIT
-    project.yml           <- xcodegen config
+    LegacyPadDisplay.xcodeproj  <- committed and ready to open, no build step
+    project.yml           <- xcodegen config (source of truth if you edit the project;
+                              re-run `xcodegen generate` after changing it)
     App/
       AppDelegate.swift
       ReceiverViewController.swift  <- fullscreen video view + touch/scroll capture + cursor sprite
@@ -125,10 +127,7 @@ permissions), then run it again.
 ## Step 2 — Build the iPad app (`iOS/` in this repo)
 
 ```bash
-brew install xcodegen
-cd iOS
-xcodegen generate
-open LegacyPadDisplay.xcodeproj
+open iOS/LegacyPadDisplay.xcodeproj
 ```
 
 In Xcode:
