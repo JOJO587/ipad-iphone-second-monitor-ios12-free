@@ -1,0 +1,3 @@
+[submodule "Mac"]
+	path = Mac
+	url = https://github.com/peetzweg/opendisplay.git

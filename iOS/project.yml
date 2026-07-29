@@ -1,0 +1,43 @@
+name: LegacyPadDisplay
+options:
+  createIntermediateGroups: true
+  bundleIdPrefix: com.example.legacypaddisplay
+
+settings:
+  base:
+    CODE_SIGN_STYLE: Automatic
+    SWIFT_VERSION: "5.0"
+    DEVELOPMENT_TEAM: ${DEVELOPMENT_TEAM}
+    MARKETING_VERSION: "0.1.0"
+    CURRENT_PROJECT_VERSION: "1"
+
+targets:
+  LegacyPadDisplay:
+    type: application
+    platform: iOS
+    # iPad stuck on iOS 12 is the whole point of this project.
+    deploymentTarget: "12.0"
+    sources:
+      - App
+    info:
+      path: App/Info.plist
+      properties:
+        CFBundleDisplayName: LegacyPadDisplay
+        CFBundleShortVersionString: "$(MARKETING_VERSION)"
+        CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
+        UILaunchStoryboardName: LaunchScreen
+        UIRequiresFullScreen: true
+        UIStatusBarHidden: true
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+          - UIInterfaceOrientationPortrait
+        NSLocalNetworkUsageDescription: "LegacyPadDisplay listens on the local network / USB so your Mac can send it a video stream."
+        NSBonjourServices:
+          - "_opensidecar._tcp"
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.example.legacypaddisplay
+        TARGETED_DEVICE_FAMILY: "1,2"
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        IPHONEOS_DEPLOYMENT_TARGET: "12.0"
