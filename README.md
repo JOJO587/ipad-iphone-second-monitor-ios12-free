@@ -1,6 +1,11 @@
-# Turn an iPad stuck on iOS 12 into a wired second display for your Mac (macOS 26) over Lightning — free, self-hosted
+# Turn an iPad stuck on iOS 12 into a second display for your Mac (macOS 26), over Lightning or Wi-Fi — free, self-hosted
 
-**Built and running for real** on an iPad Air (Model A1475, iOS 12.5.8) over a Lightning cable. H.264 video + touch + two-finger scroll + a real mouse cursor all work reliably.
+**Built and running for real** on an iPad Air (Model A1475, iOS 12.5.8), both over a Lightning cable and over Wi-Fi. H.264 video + touch + two-finger scroll + a real mouse cursor all work reliably.
+
+No cable required: the Mac app auto-discovers the iPad over Bonjour on the
+same Wi-Fi network and connects directly. It prefers USB when a cable is
+plugged in (lower, steadier latency) and falls back to Wi-Fi automatically
+otherwise — you don't have to choose a mode, it just works either way.
 
 ## The idea
 
@@ -10,9 +15,9 @@ Skip the paid apps (Duet Display, Luna Display...). Instead:
    **[OpenDisplay](https://github.com/peetzweg/opendisplay)** app (GPL-3.0, free).
    It already handles the hard part: creating a virtual display on macOS
    (`CGVirtualDisplay`), capturing it (`ScreenCaptureKit`), hardware-encoding
-   H.264 (`VideoToolbox`), and talking directly to macOS's `usbmuxd` to
-   transport it over Lightning/USB-C — **no extra tool like `iproxy`
-   needed.**
+   H.264 (`VideoToolbox`), and transporting it either over Wi-Fi (discovered
+   via Bonjour) or by talking directly to macOS's `usbmuxd` over
+   Lightning/USB-C — **no extra tool like `iproxy` needed.**
 2. **iPad side**: OpenDisplay requires iPadOS 17+, so it **can't be
    installed on an iOS 12 iPad**. That's why the `iOS/` folder in this repo
    is a **purpose-built iOS 12 client**: a clean-room reimplementation of
@@ -133,11 +138,18 @@ membership ($99/year) — signs for a full year.
 ## Step 3 — Connect
 
 1. Make sure both apps are running (Mac app has Screen Recording +
-   Accessibility permissions; iPad app is open, cable plugged in).
-2. In the Mac app (OpenDisplay), select the **USB** connection mode — since
-   your iPad app shares the same `id` and port 9000 as the original client,
-   the Mac app will recognize it through `usbmuxd` just like a normal
-   OpenDisplay device.
+   Accessibility permissions; iPad app is open).
+2. Two ways to connect, no mode switch needed on the Mac side — it picks
+   automatically:
+   - **Cable**: plug the iPad into the Mac over Lightning/USB-C. The Mac
+     app recognizes it through `usbmuxd` just like a normal OpenDisplay
+     device (same `id`/port 9000 as the original client).
+   - **Wi-Fi**: put both devices on the same Wi-Fi network, no cable.
+     The Mac app browses for `_opensidecar._tcp` over Bonjour and connects
+     directly to the iPad's port 9000. If the iPad asks for **Local Network**
+     permission the first time, allow it — Wi-Fi discovery needs it.
+   - If both are available at once, the Mac app prefers USB (lower, steadier
+     latency) and falls back to Wi-Fi automatically if the cable is pulled.
 3. Once connected, the iPad should switch from a black screen to showing
    the macOS desktop (with a real mouse cursor), and a new display should
    appear under System Settings → Displays on the Mac — drag a window over
