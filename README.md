@@ -1,3 +1,15 @@
+> ## ⚠️ 编译分发版说明
+>
+> 本仓库是 **[cuongpham1/ipad-iphone-second-monitor-ios12-free](https://github.com/cuongpham1/ipad-iphone-second-monitor-ios12-free) 的纯编译分发版本**，**未对源代码做任何修改**。
+>
+> - 📦 **下载编译好的 IPA**：[Releases 页面](https://github.com/JOJO587/ipad-iphone-second-monitor-ios12-free/releases)
+> - 📖 **原项目说明与使用方法**：见下方原 README
+> - 🔧 **自动编译配置**：`.github/workflows/build-ios.yml`（使用 macos-14 + Xcode 15，无需任何证书）
+>
+> 所有源代码版权归原作者 [cuongpham1](https://github.com/cuongpham1) 所有，本仓库仅作为编译产物分发用途。
+
+---
+
 # Turn an iPad or iPhone stuck on iOS 12 into a second display for your Mac (macOS 26), over Lightning or Wi-Fi — free, self-hosted
 
 **Built and running for real** on an iPad Air (Model A1475, iOS 12.5.8), both over a Lightning cable and over Wi-Fi. H.264 video + touch + two-finger scroll + a real mouse cursor all work reliably.
